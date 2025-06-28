@@ -63,7 +63,7 @@ class ProductServiceApplicationTests {
     Product savedProduct =
         productRepository.save(
             Product.builder()
-                .id(UUID.randomUUID())
+                .id(UUID.randomUUID().toString())
                 .name(form.getName())
                 .description(form.getDescription())
                 .price(form.getPrice())
