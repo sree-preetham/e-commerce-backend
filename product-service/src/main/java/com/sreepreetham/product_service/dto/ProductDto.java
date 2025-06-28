@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ProductDto {
-  private UUID id;
+  private String id;
   private String name;
   private String description;
   private BigDecimal price;

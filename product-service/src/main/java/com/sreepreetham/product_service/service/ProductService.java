@@ -24,7 +24,7 @@ public class ProductService {
         Product.builder()
             .name(form.getName())
             .description(form.getDescription())
-            .id(UUID.randomUUID())
+            .id(UUID.randomUUID().toString())
             .price(form.getPrice())
             .rating(form.getRating())
             .category(form.getCategory())
@@ -44,7 +44,7 @@ public class ProductService {
     return productsListDto;
   }
 
-  public ProductDto findProductById(UUID uuid) {
+  public ProductDto findProductById(String uuid) {
     Product product =
         productRepository
             .findById(uuid)

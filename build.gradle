@@ -1,19 +1,36 @@
 plugins {
-    id 'java'
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'org.springframework.boot' version '3.5.0' apply false
 }
 
-group = 'org.sreepreetham'
-version = '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
+ext {
+    set('springCloudVersion', "2025.0.0")
 }
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
-test {
-    useJUnitPlatform()
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'org.sreepreetham'
+    version = '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }
