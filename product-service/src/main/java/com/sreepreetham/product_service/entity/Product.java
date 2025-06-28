@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @Document(collection = "products")
 public class Product {
-  @Id private UUID id;
+  @Id private String id;
   private String name;
   private String description;
   private BigDecimal price;
