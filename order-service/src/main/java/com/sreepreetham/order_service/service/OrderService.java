@@ -5,6 +5,7 @@ import com.sreepreetham.order_service.dto.OrderDto;
 import com.sreepreetham.order_service.dto.OrderLineItemsDto;
 import com.sreepreetham.order_service.entity.Order;
 import com.sreepreetham.order_service.entity.OrderLineItems;
+import com.sreepreetham.order_service.event.OrderPlacedEvent;
 import com.sreepreetham.order_service.form.OrderRequestForm;
 import com.sreepreetham.order_service.repository.OrderRepository;
 import java.util.Arrays;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.kafka.core.KafkaTemplate;
+
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class OrderService {
   private final OrderRepository orderRepository;
   private final WebClient.Builder webClientBuilder;
+  private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
   public OrderDto placeOrder(OrderRequestForm form) {
     Order order = new Order();
@@ -45,7 +49,10 @@ public class OrderService {
     assert inventoryResponseArray != null;
     boolean allProductsInStock =
         Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::getIsInStock);
-    if (allProductsInStock) orderRepository.save(order);
+    if (allProductsInStock){
+      orderRepository.save(order);
+      kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
+    }
     else throw new IllegalArgumentException("Product is not in stock");
     return new OrderDto(order, form.getOrderLineItemsDtoList());
   }
